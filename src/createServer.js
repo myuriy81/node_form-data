@@ -41,10 +41,25 @@ function createServer() {
           return;
         }
 
-        fs.writeFileSync(dataPath, data);
-        res.statusCode = 200;
-        res.setHeader('Content-type', 'application/json');
-        res.end(data);
+        try {
+          JSON.parse(data);
+        } catch (error) {
+          res.statusCode = 400;
+          res.setHeader('Content-type', 'text/plain');
+          res.end('All params must be completed');
+        }
+
+        fs.writeFile(dataPath, data, (err) => {
+          if (err) {
+            res.statusCode = 500;
+
+            return res.end('Error saving data');
+          }
+          // fs.writeFileSync(dataPath, data);
+          res.statusCode = 200;
+          res.setHeader('Content-type', 'application/json');
+          res.end(data);
+        });
       });
 
       return;
