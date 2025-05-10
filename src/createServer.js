@@ -30,19 +30,21 @@ function createServer() {
           req.end('Page not found');
         }
 
-        try {
-          const dataPath = path.resolve(__dirname, '..', 'db/expense.json');
-          const data = Buffer.concat(chunks).toString();
+        const dataPath = path.resolve(__dirname, '..', 'db/expense.json');
+        const data = Buffer.concat(chunks).toString();
 
-          fs.writeFileSync(dataPath, data);
-          res.statusCode = 200;
-          res.setHeader('Content-type', 'application/json');
-          res.end(data);
-        } catch (error) {
+        if (Object.keys(JSON.parse(data)).length !== 3) {
           res.statusCode = 400;
           res.setHeader('Content-type', 'text/plain');
           res.end('All params must be completed');
+
+          return;
         }
+
+        fs.writeFileSync(dataPath, data);
+        res.statusCode = 200;
+        res.setHeader('Content-type', 'application/json');
+        res.end(data);
       });
 
       return;
